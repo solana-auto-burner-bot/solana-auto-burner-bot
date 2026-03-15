@@ -162,7 +162,7 @@ At a technical level, each loop does the following:
 
 | Goal | Setting |
 | --- | --- |
-| Change the CLI brand | `LOG_BRAND=YourBrand` |
+| Change the CLI brand | `LOG_BRAND=The Burn House - $BurnHouse` or your own value |
 | Run the cycle every 61 seconds | `INTERVAL_MS=61000` |
 | Run the cycle every 5 minutes | `INTERVAL_MS=300000` |
 | Make each cycle a single buy | `BUY_SPLIT_COUNT=1` |

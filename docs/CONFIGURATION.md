@@ -14,7 +14,7 @@ This project is designed to be controlled through `.env`.
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `LOG_BRAND` | `BurnGPT` fallback | Changes the brand prefix in CLI logs. |
+| `LOG_BRAND` | `The Burn House - $BurnHouse` | Changes the brand prefix in CLI logs. |
 
 ## Claim Settings
 

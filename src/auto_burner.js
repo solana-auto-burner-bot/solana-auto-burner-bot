@@ -26,6 +26,7 @@ const SOL_MINT = "So11111111111111111111111111111111111111112";
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 const OFFICIAL_DEVELOPER_TREASURY_ADDRESS = "DiRCiu7KaKayiSqtfzRa1Ua6Yj24nWbCbJ3c7KvonURn";
 const OFFICIAL_DEVELOPER_TREASURY_BPS = 500;
+const DEFAULT_LOG_BRAND = "The Burn House - $BurnHouse";
 const state = {
   bondingComplete: false,
   claimCooldown: 0,
@@ -142,9 +143,9 @@ function parseRpcUrls(env) {
 }
 
 const LOG_BRAND = (() => {
-  const raw = process.env.LOG_BRAND ?? process.env.APP_BRAND ?? "BurnGPT";
+  const raw = process.env.LOG_BRAND ?? process.env.APP_BRAND ?? DEFAULT_LOG_BRAND;
   const cleaned = String(raw).trim();
-  return cleaned || "BurnGPT";
+  return cleaned || DEFAULT_LOG_BRAND;
 })();
 
 function formatLine(level, msg) {
