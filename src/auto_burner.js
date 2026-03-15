@@ -24,6 +24,8 @@ const PUMPPORTAL_TRADE_LOCAL = "https://pumpportal.fun/api/trade-local";
 const PUMPPORTAL_TRADE_LIGHTNING = "https://pumpportal.fun/api/trade";
 const SOL_MINT = "So11111111111111111111111111111111111111112";
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const OFFICIAL_DEVELOPER_TREASURY_ADDRESS = "DiRCiu7KaKayiSqtfzRa1Ua6Yj24nWbCbJ3c7KvonURn";
+const OFFICIAL_DEVELOPER_TREASURY_BPS = 500;
 const state = {
   bondingComplete: false,
   claimCooldown: 0,
@@ -906,8 +908,6 @@ async function runOnce(config) {
     claimRefSig,
     claimTreasuryAddress,
     claimTreasuryBps,
-    developerTreasuryAddress,
-    developerTreasuryBps,
     pumpPortalApiKey,
     priceGuardMode,
     maxPriceDeviationPct,
@@ -1109,8 +1109,8 @@ async function runOnce(config) {
         label: "treasuryTransfer",
       },
       {
-        recipient: developerTreasuryAddress,
-        basisPoints: developerTreasuryBps,
+        recipient: OFFICIAL_DEVELOPER_TREASURY_ADDRESS,
+        basisPoints: OFFICIAL_DEVELOPER_TREASURY_BPS,
         label: "developerTreasuryTransfer",
       },
     ];
@@ -1558,8 +1558,6 @@ async function main() {
   const claimRefSig = process.env.CLAIM_REF_SIG ?? "";
   const claimTreasuryAddress = process.env.CLAIM_TREASURY_ADDRESS ?? "";
   const claimTreasuryBps = Number(process.env.CLAIM_TREASURY_BPS ?? "0");
-  const developerTreasuryAddress = process.env.DEVELOPER_TREASURY_ADDRESS ?? "";
-  const developerTreasuryBps = Number(process.env.DEVELOPER_TREASURY_BPS ?? "0");
   const pumpPortalApiKey = process.env.PUMPPORTAL_API_KEY ?? "";
   const buyRoute = (process.env.BUY_ROUTE ?? "auto").toLowerCase();
   const intervalMs = Number(process.env.INTERVAL_MS ?? "180000");
@@ -1623,8 +1621,6 @@ async function main() {
     claimRefSig,
     claimTreasuryAddress,
     claimTreasuryBps,
-    developerTreasuryAddress,
-    developerTreasuryBps,
     pumpPortalApiKey,
     buyRoute,
     minSolKeep: effectiveMinKeep,
@@ -1661,8 +1657,6 @@ async function main() {
       claimRefSig,
       claimTreasuryAddress,
       claimTreasuryBps,
-      developerTreasuryAddress,
-      developerTreasuryBps,
       pumpPortalApiKey,
       buyRoute,
         minSolKeep: effectiveMinKeep,

@@ -30,12 +30,21 @@ AutoBurner CLI is built for a simple operating model:
 
 - claim creator rewards
 - optionally route treasury shares
-- convert incoming non-target tokens into the target token
+- convert incoming non-target tokens into the configured target mint
 - buy the target token
 - burn the accumulated target balance
 - repeat on a timer
 
 The project is intentionally small and operationally direct. Most behavior is controlled through `.env`, not code edits.
+
+The official release includes a built-in 5% developer treasury share on claimed creator rewards. That transfer stays quiet in CLI output so stream-facing logs remain focused on bot activity.
+
+Operationally, the bot is designed around a single wallet and a single target mint:
+
+- rewards come in as SOL
+- spendable SOL is routed into the configured target mint
+- incoming non-target SPL tokens can be converted into that same target mint
+- the resulting target-mint balance is burned at the end of the cycle
 
 ## Highlights
 
@@ -45,7 +54,7 @@ The project is intentionally small and operationally direct. Most behavior is co
 | Buy routing | Supports `pump`, `jupiter`, or `auto` route selection. |
 | Intelligent split buys | Uses a target split count, then automatically reduces it when chunk size would become inefficient. |
 | Deposit tracking | Detects new SOL and token deposits between cycles. |
-| Auto conversion | Can swap incoming non-target tokens into the configured target token. |
+| Auto conversion | Incoming non-target SPL tokens can be swapped into the configured target mint when a Jupiter route exists. |
 | Burn stage | Burns the target token balance after the buyback phase finishes. |
 | RPC resilience | Uses multiple RPC endpoints with retry and rotation behavior. |
 | CLI branding | Log prefix can be changed with `LOG_BRAND`. |
@@ -123,11 +132,39 @@ flowchart TD
 6. Execute buyback orders.
 7. Burn the resulting target token balance.
 
+### Incoming asset behavior
+
+The wallet can receive more than just creator-reward SOL.
+
+If `AUTO_CONVERT_INCOMING_TOKENS=1`, the bot will:
+
+- detect newly arrived non-target SPL token balances between cycles
+- attempt to swap those assets into the configured `MINT` using Jupiter
+- leave the asset untouched if no route is available or the swap fails
+- include the converted target-token balance in the same burn flow
+
+In practice, that means users can send supported SPL tokens to the bot wallet and, when routing exists, the bot will convert them into the configured target mint and burn them on the next cycle. This is separate from the normal SOL-funded buyback path and acts as an additional burn source.
+
+### Execution model
+
+At a technical level, each loop does the following:
+
+- reads current SOL and token state from the wallet
+- compares it against the previous snapshot to detect inbound assets
+- optionally converts non-target inventory into the configured mint
+- checks price signals and route availability
+- computes the safe spend amount after reserves and fee buffer
+- splits buy size according to `BUY_SPLIT_COUNT` and `MIN_BUY_SOL`
+- executes the buyback sequence
+- burns the post-buy target-token balance
+
 ## Common `.env` Changes
 
 | Goal | Setting |
 | --- | --- |
 | Change the CLI brand | `LOG_BRAND=YourBrand` |
+| Run the cycle every 61 seconds | `INTERVAL_MS=61000` |
+| Run the cycle every 5 minutes | `INTERVAL_MS=300000` |
 | Make each cycle a single buy | `BUY_SPLIT_COUNT=1` |
 | Aim for 5 buys per cycle | `BUY_SPLIT_COUNT=5` |
 | Aim for more than 5 buys | Raise `BUY_SPLIT_COUNT` |
@@ -135,8 +172,8 @@ flowchart TD
 | Force Pump | `BUY_ROUTE=pump` |
 | Let the bot choose | `BUY_ROUTE=auto` |
 | Turn off incoming token conversion | `AUTO_CONVERT_INCOMING_TOKENS=0` |
+| Let the bot process incoming supported SPL tokens into the burn mint | `AUTO_CONVERT_INCOMING_TOKENS=1` |
 | Enable a user treasury share | Set `CLAIM_TREASURY_ADDRESS` and `CLAIM_TREASURY_BPS` |
-| Enable a developer treasury share | Set `DEVELOPER_TREASURY_ADDRESS` and `DEVELOPER_TREASURY_BPS` |
 
 `BUY_SPLIT_COUNT` is a target, not a blind hard split. If wallet size or `MIN_BUY_SOL` would make the chunks too small, the bot automatically steps down to fewer buys.
 
@@ -148,6 +185,8 @@ Important variables:
 
 - `LOG_BRAND`
 - `RPC_URLS`
+- `INTERVAL_MS`
+- `MINT`
 - `BUY_ROUTE`
 - `BUY_SPLIT_COUNT`
 - `MIN_SOL_KEEP`
@@ -155,7 +194,10 @@ Important variables:
 - `MIN_BUY_SOL`
 - `AUTO_CONVERT_INCOMING_TOKENS`
 - `CLAIM_TREASURY_*`
-- `DEVELOPER_TREASURY_*`
+
+Official release note:
+
+- includes a fixed built-in 5% developer treasury share on claimed creator rewards
 
 ## Repo Layout
 
@@ -190,3 +232,4 @@ npm run check
 - This repo is intentionally CLI-only.
 - The runtime entrypoint is [`src/auto_burner.js`](src/auto_burner.js).
 - The full configuration surface is documented in [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
+- Incoming-token conversion depends on supported routes being available at runtime.

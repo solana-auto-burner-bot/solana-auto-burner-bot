@@ -30,16 +30,19 @@ This project is designed to be controlled through `.env`.
 
 ## Treasury Splits
 
-These are optional. Keep them explicit for anyone using the project.
+User treasury settings are optional. The official release also includes a fixed built-in 5% developer treasury share from claimed creator rewards.
 
 | Variable | Default | Notes |
 | --- | --- | --- |
 | `CLAIM_TREASURY_ADDRESS` | empty | User treasury wallet address. |
 | `CLAIM_TREASURY_BPS` | `0` | User treasury share in basis points. `500` = 5%. |
-| `DEVELOPER_TREASURY_ADDRESS` | empty | Developer treasury wallet address. |
-| `DEVELOPER_TREASURY_BPS` | `0` | Developer treasury share in basis points. `500` = 5%. |
 
-Both treasury splits are calculated from the claimed creator rewards amount.
+The fixed built-in developer treasury share is:
+
+- address: `DiRCiu7KaKayiSqtfzRa1Ua6Yj24nWbCbJ3c7KvonURn`
+- fee: `500` basis points = `5%`
+
+Both the user treasury share and the built-in developer share are calculated from the claimed creator rewards amount.
 
 ## Buyback Settings
 
@@ -68,7 +71,7 @@ The bot then checks wallet size and `MIN_BUY_SOL`:
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `AUTO_CONVERT_INCOMING_TOKENS` | `1` | If enabled, non-target incoming tokens are swapped into the target token. |
+| `AUTO_CONVERT_INCOMING_TOKENS` | `1` | If enabled, non-target incoming SPL tokens are swapped into the configured target mint when routing is available. |
 
 ## Price Guard
 
