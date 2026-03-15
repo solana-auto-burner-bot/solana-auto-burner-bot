@@ -1,0 +1,21 @@
+{
+  "name": "autoburner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CLI autoburner for claim, buyback, and burn cycles on Solana.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "scripts": {
+    "start": "node src/auto_burner.js",
+    "check": "node --check src/auto_burner.js"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.8",
+    "@solana/web3.js": "^1.98.0",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2"
+  }
+}
